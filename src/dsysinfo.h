@@ -51,7 +51,8 @@ public:
         DeepinProfessional
     };
 
-#ifdef Q_OS_LINUX
+
+#if defined (Q_OS_LINUX) || defined(Q_OS_FREEBSD)
     static bool isDeepin();
     static bool isDDE();
     static DeepinType deepinType();

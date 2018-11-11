@@ -41,13 +41,13 @@ class DSysInfoPrivate
 public:
     DSysInfoPrivate();
 
-#ifdef Q_OS_LINUX
+#if defined (Q_OS_LINUX) || defined(Q_OS_FREEBSD)
     void ensureDeepinInfo();
 #endif
     void ensureReleaseInfo();
     void ensureComputerInfo();
 
-#ifdef Q_OS_LINUX
+#if defined (Q_OS_LINUX) || defined(Q_OS_FREEBSD)
     DSysInfo::DeepinType deepinType = DSysInfo::DeepinType(-1);
     QMap<QString, QString> deepinTypeMap; //Type Name with Language
     QString deepinVersion;
@@ -71,7 +71,7 @@ DSysInfoPrivate::DSysInfoPrivate()
 
 }
 
-#ifdef Q_OS_LINUX
+#if defined (Q_OS_LINUX) || defined(Q_OS_FREEBSD)
 void DSysInfoPrivate::ensureDeepinInfo()
 {
     if (deepinType >= 0)
@@ -218,7 +218,7 @@ void DSysInfoPrivate::ensureReleaseInfo()
         return;
     }
 
-#ifdef Q_OS_LINUX
+#if defined (Q_OS_LINUX) || defined(Q_OS_FREEBSD)
     readOsRelease(this);
     readLsbRelease(this);
 
@@ -287,7 +287,13 @@ void DSysInfoPrivate::ensureComputerInfo()
     if (memoryTotalSize >= 0)
         return;
 
-#ifdef Q_OS_LINUX
+
+    //!! FreeBSD don't have utsname?
+#if defined(Q_OS_FREEBSD)
+    return;
+#endif
+
+#if defined (Q_OS_LINUX)
     struct utsname u;
     if (uname(&u) == 0)
         computerName = QString::fromLatin1(u.nodename);
@@ -358,7 +364,7 @@ QString DSysInfo::operatingSystemName()
     return siGlobal->prettyName;
 }
 
-#ifdef Q_OS_LINUX
+#if defined (Q_OS_LINUX) || defined(Q_OS_FREEBSD)
 bool DSysInfo::isDeepin()
 {
     siGlobal->ensureReleaseInfo();
